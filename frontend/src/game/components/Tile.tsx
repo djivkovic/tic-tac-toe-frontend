@@ -4,11 +4,18 @@ interface TileProps {
     className?: string;
     value: string | null; 
     onTileClick?: () => void;
+    playerTurn?: string;
 }
+const Tile: React.FC<TileProps> = ({ className, value, onTileClick, playerTurn }) => {
+    let hoverClass = null;
 
-const Tile: React.FC<TileProps> = ({ className, value, onTileClick }) => {
+    if (value == null && playerTurn != null) {
+        hoverClass = `${playerTurn.toLowerCase()}-hover`;
+    }
+
     return (
-        <div className={`tile ${className}`} onClick={onTileClick}>{value}</div>); 
+        <div className={`tile ${className} ${hoverClass}`} onClick={onTileClick}>{value}</div>
+    ); 
 }
 
 export default Tile;

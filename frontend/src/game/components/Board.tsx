@@ -1,24 +1,34 @@
 import React from "react";
 import Tile from "./Tile";
+import Strike from "./Strike";
 
 interface BoardProps {
     tiles: Array<string | null>;
     onTileClick: (index: number) => void; 
     className?: string; 
+    playerTurn: string;
+    strikeClass: string;
+}
+const getClassNames = (index:number) => {
+    let classNames = "";
+    if (index % 3 !== 2) classNames += "right-border ";
+    if (index < 6) classNames += "bottom-border ";
+    return classNames.trim();
 }
 
-const Board: React.FC<BoardProps> = ({ tiles, onTileClick }) => {
+const Board: React.FC<BoardProps> = ({ tiles, onTileClick, playerTurn, strikeClass }) => {
     return (
-        <div className={`board`}>
-            <Tile onTileClick={()=> onTileClick(0)} className={`right-border bottom-border`} value={tiles[0]} />
-            <Tile onTileClick={()=> onTileClick(1)} className={`right-border bottom-border`} value={tiles[1]} />
-            <Tile onTileClick={()=> onTileClick(2)} className={`bottom-border`} value={tiles[2]} />
-            <Tile onTileClick={()=> onTileClick(3)} className={`right-border bottom-border`} value={tiles[3]} />
-            <Tile onTileClick={()=> onTileClick(4)} className={`right-border bottom-border`} value={tiles[4]} />
-            <Tile onTileClick={()=> onTileClick(5)} className={`bottom-border`} value={tiles[5]} />
-            <Tile onTileClick={()=> onTileClick(6)} className={`right-border`} value={tiles[6]} />
-            <Tile onTileClick={()=> onTileClick(7)} className={`right-border`} value={tiles[7]} />
-            <Tile onTileClick={()=> onTileClick(8)} value={tiles[8]} />
+        <div className="board">
+            {tiles.map((value, index) => (
+                <Tile
+                    key={index}
+                    playerTurn={playerTurn}
+                    onTileClick={() => onTileClick(index)}
+                    className={getClassNames(index)}
+                    value={value}
+                />
+            ))}
+            <Strike strikeClass={strikeClass}/>
         </div>
     );
 }
