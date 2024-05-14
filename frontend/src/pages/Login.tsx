@@ -5,12 +5,15 @@ import '../css/auth.css';
 const Login = () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+
+  const host = process.env.REACT_APP_HOST;
+
   const navigate = useNavigate();
 
   const handleLogin = async (e: SyntheticEvent) => {
     e.preventDefault();
 
-    let response = await fetch("http://localhost:5000/login", {
+    let response = await fetch(`${host}/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username: username, password: password })
