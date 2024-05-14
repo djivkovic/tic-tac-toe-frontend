@@ -1,9 +1,14 @@
 import React from "react";
 
-const Tile = ({ className }: { className?: string }) => {
-    return (
-        <div className={`tile ${className}`}>X</div>
-    );
+interface TileProps {
+    className?: string;
+    value: string | null; 
+    onTileClick?: () => void;
 }
- 
+
+const Tile: React.FC<TileProps> = ({ className, value, onTileClick }) => {
+    return (
+        <div className={`tile ${className}`} onClick={onTileClick}>{value}</div>); 
+}
+
 export default Tile;

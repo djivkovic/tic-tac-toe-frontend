@@ -4,7 +4,7 @@
         align-items: center;
         background-color: #2b4278;
         height: 100vh;
-        color: white;
+        color: black;
 }
 
 .home-container h1{
@@ -39,6 +39,7 @@
 }
 
 .modal-content {
+    position: relative;
     background-color: #fff;
     width: 400px; 
     padding: 20px;
@@ -49,9 +50,10 @@
 
 .close-btn {
     position: absolute;
-    top: 5px;
+    top: 0;
     right: 10px;
     cursor: pointer;
+    color: red;
 }
 
 .single-player-btn {
