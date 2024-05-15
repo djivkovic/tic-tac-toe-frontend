@@ -7,13 +7,16 @@ const Home = () => {
     const [username, setUsername] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [singlePlayerSelected, setSinglePlayerSelected] = useState(false);
+    const [hideCreateNewGame, setHideCreateNewGame] = useState(false);
 
     const openCreateGameModal = () => {
         setShowModal(true);
+        setHideCreateNewGame(true);
     };
 
     const closeCreateGameModal = () => {
         setShowModal(false);
+        setHideCreateNewGame(false);
     };
     useEffect(() => {
     const token = localStorage.getItem('token');
@@ -33,7 +36,7 @@ const Home = () => {
         <div className='home-container'>
             <h2 className='home-title'>Home Page</h2>
             <p>Welcome, {username} </p> 
-            <button className='create-new-game-btn' onClick={openCreateGameModal}>Create New Game</button>
+            {!hideCreateNewGame && <button className='create-new-game-btn' onClick={openCreateGameModal}>Create New Game</button>}
             {showModal && (
                 <div className="modal">
                     <div className="modal-content">
@@ -45,7 +48,9 @@ const Home = () => {
                     </div>
                 </div>
             )}
-            {singlePlayerSelected && <TicTacToe />}
+            <div className='game-container'>
+                {singlePlayerSelected && <TicTacToe />}
+            </div>
         </div>
         </>
     );

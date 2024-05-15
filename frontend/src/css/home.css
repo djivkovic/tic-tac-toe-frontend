@@ -3,8 +3,8 @@
         flex-direction: column;
         align-items: center;
         background-color: #2b4278;
-        height: 100vh;
-        color: black;
+        height: 110vh;
+        color: white;
 }
 
 .home-container h1{
@@ -19,6 +19,7 @@
     color: white;
     border-radius: 20px;
     transition: background-color 0.3s ease;
+    cursor: pointer;
 }
 
 .create-new-game-btn:hover {
@@ -41,6 +42,7 @@
 .modal-content {
     position: relative;
     background-color: #fff;
+    color: black;
     width: 400px; 
     padding: 20px;
     border-radius: 10px;
@@ -91,6 +93,6 @@
     transition: background-color 0.3s ease;
 }
 
-.multi-player-btnn:hover {
+.multi-player-btn:hover {
     background-color: #0056b3;
 }
