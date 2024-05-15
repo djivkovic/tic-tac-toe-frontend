@@ -82,8 +82,18 @@ const TicTacToe = ({ gameType }: { gameType?: string }) => {
             setGameState(GameState.draw);
         }
     }
+    const findEmptyTiles = (tiles: (string | null)[]): number[] => {
+        const emptyTiles: number[] = [];
+        tiles.forEach((tile, index) => {
+            if (tile === null) {
+                emptyTiles.push(index);
+            }
+        });
+        return emptyTiles;
+    }
 
     useEffect(() => {
+        console.log("Empty tiles:", findEmptyTiles(tiles));
         checkWinner(tiles, setStrikeClass, setGameState);
     }, [tiles])
 
@@ -91,28 +101,7 @@ const TicTacToe = ({ gameType }: { gameType?: string }) => {
         if (gameState !== GameState.inProgress) {
             setGameResult({ moves, gameType, winner });
         }
-    }, [gameState, moves, gameType, winner]);
-
-    const handleTileClick = (index: number) => {
-        if (gameState !== GameState.inProgress) {
-            return;
-        }
-
-        if (tiles[index] !== null) {
-            return;
-        }
-
-        const newTiles = [...tiles];
-        newTiles[index] = playerTurn;
-        setTiles(newTiles);
-        setMoves([...moves, { index, player: playerTurn }]);
-
-        if (playerTurn === PLAYER_X) {
-            setPlayerTurn(PLAYER_O);
-        } else {
-            setPlayerTurn(PLAYER_X);
-        }
-    }
+    }, [gameState, tiles, moves, gameType, winner]);
 
     const renderMoves = () => {
         return moves.map((move, index) => (
@@ -124,7 +113,7 @@ const TicTacToe = ({ gameType }: { gameType?: string }) => {
         console.log({ gameId, gameResult });
     
         if (gameResult) {
-            const { moves, gameType, winner } = gameResult;
+            const { gameType, winner } = gameResult;
     
             const winnerToSend = winner ? winner : null;
     
@@ -138,11 +127,63 @@ const TicTacToe = ({ gameType }: { gameType?: string }) => {
             console.log(result);
         }
     }
+   
+    const calculateNextMove = (tiles: (string | null)[]): number => {
+        if (gameState !== GameState.inProgress) {
+            return -1;
+        }
+    
+        const emptyTiles = findEmptyTiles(tiles);
+    
+        if (emptyTiles.length === 0) {
+            return -1;
+        }
+    
+        const randomIndex = Math.floor(Math.random() * emptyTiles.length);
+        return emptyTiles[randomIndex];
+    };
+
+    const handleTileClick = (index: number) => {
+        if (gameState !== GameState.inProgress || tiles[index] !== null) {
+            return;
+        }
+    
+        const newTiles = [...tiles];
+        newTiles[index] = playerTurn;
+        setTiles(newTiles);
+        addMove(index, playerTurn);
+    
+        checkWinner(newTiles, setStrikeClass, setGameState);
+    
+        if (gameState !== GameState.inProgress) {
+            return;
+        }
+    
+        if (findEmptyTiles(newTiles).length === 0) {
+            setGameState(GameState.draw);
+            return;
+        }
+    
+        const aiMove = calculateNextMove(newTiles);
+        const aiTiles = [...newTiles];
+        aiTiles[aiMove] = playerTurn === PLAYER_X ? PLAYER_O : PLAYER_X;
+        setTiles(aiTiles);
+        addMove(aiMove, playerTurn === PLAYER_X ? PLAYER_O : PLAYER_X);
+    
+        checkWinner(aiTiles, setStrikeClass, setGameState);
+    };
+    
+
+    const addMove = (index: number, player: string) => {
+        if (gameState === GameState.inProgress) {
+            setMoves(prevMoves => [...prevMoves, { index, player }]);
+        }
+    };
 
     return (
         <div className='game-container'>
             <h1>Tic Tac Toe</h1>
-            <h2>Game ID: {gameId}</h2> 
+            <h2>Game ID: {gameId}</h2> {/*to do*/}
             <div className='game-grid'>
                 <div className='board-container'>
                     <Board playerTurn={playerTurn} tiles={tiles} onTileClick={handleTileClick} strikeClass={strikeClass} />
