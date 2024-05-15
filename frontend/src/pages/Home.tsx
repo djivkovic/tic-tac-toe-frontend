@@ -8,6 +8,7 @@ const Home = () => {
     const [showModal, setShowModal] = useState(false);
     const [singlePlayerSelected, setSinglePlayerSelected] = useState(false);
     const [hideCreateNewGame, setHideCreateNewGame] = useState(false);
+    const [gameType, setGameType] = useState('');
 
     const openCreateGameModal = () => {
         setShowModal(true);
@@ -29,6 +30,7 @@ const Home = () => {
     const handleSinglePlayerClick = () => {
         setSinglePlayerSelected(true); 
         setShowModal(false); 
+        setGameType("singlePlayer")
     };
 
     return (
@@ -49,7 +51,7 @@ const Home = () => {
                 </div>
             )}
             <div className='game-container'>
-                {singlePlayerSelected && <TicTacToe />}
+                {singlePlayerSelected && <TicTacToe gameType={gameType} />}
             </div>
         </div>
         </>
