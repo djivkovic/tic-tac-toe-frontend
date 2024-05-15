@@ -4,6 +4,8 @@ import GameOver from './components/GameOver';
 import ResetGame from './components/ResetGame';
 import GameState from './components/GameState';
 
+const host = process.env.REACT_APP_HOST;
+
 const PLAYER_X = 'X';
 const PLAYER_O = 'O';
 
@@ -31,7 +33,7 @@ type Move = {
 type GameResult = {
     moves: Move[];
     gameType?: string;
-    winner?: string | null;
+    winner: string | null;
 };
 
 const TicTacToe = ({ gameType }: { gameType?: string }) => {
@@ -89,7 +91,7 @@ const TicTacToe = ({ gameType }: { gameType?: string }) => {
         if (gameState !== GameState.inProgress) {
             setGameResult({ moves, gameType, winner });
         }
-    }, [gameState, moves, gameType]);
+    }, [gameState, moves, gameType, winner]);
 
     const handleTileClick = (index: number) => {
         if (gameState !== GameState.inProgress) {
@@ -118,8 +120,23 @@ const TicTacToe = ({ gameType }: { gameType?: string }) => {
         ));
     }
 
-    const handleSave = () => {
+    const handleSave = async () => {
         console.log({ gameId, gameResult });
+    
+        if (gameResult) {
+            const { moves, gameType, winner } = gameResult;
+    
+            const winnerToSend = winner ? winner : null;
+    
+            let response = await fetch(`${host}/create-game`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ moves, gameType, winner: winnerToSend })
+            });
+    
+            const result = await response.json();
+            console.log(result);
+        }
     }
 
     return (
