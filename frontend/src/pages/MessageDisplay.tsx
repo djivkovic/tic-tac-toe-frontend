@@ -1,23 +1,26 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { jwtDecode } from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
 import socketService from '../services/Socket';
 
 const MessageDisplay = () => {
     const [messages, setMessages] = useState<string[]>([]);
-    const [roomName, setRoomName] = useState<string>("");
+    const [roomName, setRoomName] = useState<number | undefined>(undefined);
+    const [userId, setUserId] = useState<string | null>(null);
+    const [username, setUsername] = useState<string | null>(null);
     const messageListenerRef = useRef<(data: any) => void>();
-    const [username, setUsername] = useState('');
 
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
-            const decodedToken: any = jwtDecode(token); ; 
-            setUsername(decodedToken.username);
+            try {
+                const decodedToken: any = jwtDecode(token);
+                setUserId(decodedToken.id);
+                setUsername(decodedToken.username);
+            } catch (error) {
+                console.error('Error decoding token', error);
+            }
         }
-
-        
-        }, []);
-
+    }, []);
     useEffect(() => {
         messageListenerRef.current = (data: any) => {
             const newMessage = data.message;
@@ -40,16 +43,26 @@ const MessageDisplay = () => {
             setMessages(JSON.parse(storedMessages));
         }
     }, []);
-
     const joinRoom = () => {
-        socketService.joinRoom(roomName);
-        setRoomName(""); 
+        if (!userId || !username) {
+            alert('User not authenticated.');
+            return;
+        }
+
+        if (roomName !== undefined) {
+            socketService.joinRoom(roomName, userId, username);
+        } else {
+            alert('Please enter a valid room number.');
+        }
     };
 
     const leaveRoom = () => {
-        socketService.leaveRoom(roomName); 
+        if (roomName !== undefined) {
+            socketService.leaveRoom(roomName);
+        } else {
+            alert('Please enter a valid room number.');
+        }
     };
-
 
     return (
         <div>
@@ -62,10 +75,10 @@ const MessageDisplay = () => {
             </ul>
             <div>
                 <input
-                    type="text"
-                    value={roomName}
-                    onChange={(e) => setRoomName(e.target.value)}
-                    placeholder="Naziv sobe"
+                    type="number"
+                    value={roomName !== undefined ? roomName : ''}
+                    onChange={(e) => setRoomName(e.target.value ? parseInt(e.target.value) : undefined)}
+                    placeholder="Room name"
                 />
                 <button onClick={joinRoom}>Join room</button>
                 <button onClick={leaveRoom}>Leave room</button>

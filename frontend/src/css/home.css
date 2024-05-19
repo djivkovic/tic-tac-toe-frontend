@@ -11,18 +11,19 @@
     text-align: center;
 }
 
-.create-new-game-btn {
+.create-new-game-btn{
     border: 1px solid darkblue;
     height: 35px;
     padding: 10px 10px;
     background-color: #007bff;
     color: white;
     border-radius: 20px;
+    margin-bottom: 10px;
     transition: background-color 0.3s ease;
     cursor: pointer;
 }
 
-.create-new-game-btn:hover {
+.create-new-game-btn:hover{
     background-color: #0056b3;
 }
 
@@ -95,4 +96,71 @@
 
 .multi-player-btn:hover {
     background-color: #0056b3;
+}
+
+.join-game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh; 
+  }
+  
+  
+
+.join-game-btn{
+    border: 1px solid darkblue;
+    background-color: #007bff;
+    padding: 8px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+
+.join-game-btn a {
+    text-decoration: none;
+    color: white;
+}
+
+.join-game-btn:hover{
+    background-color: #0056b3;
+}
+
+.join-game-input, input{
+    width: 500px;
+}
+
+.join-game-input{
+    width: 50%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin: 0 auto;
+    text-align: center;
+    justify-content: center;
+    border-radius: 5px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.join-game{
+    width: 50%;
+    color: black;
+    font-size: 17px;
+    letter-spacing: 1px;
+    background-color: rgb(158, 248, 248);
+    padding: 10px;
+    border: 1px solid black;
+    border-radius: 20px;
+    transition: background-color ease 0.5s;
+
+}
+
+.join-game:hover{
+    background-color: rgb(69, 213, 213);
 }
