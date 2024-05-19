@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import socketService from '../services/Socket';
-
 const MessageSender = () => {
     const [message, setMessage] = useState<string>('');
     const [room, setRoom] = useState<number | undefined>(undefined);

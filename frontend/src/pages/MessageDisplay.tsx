@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {jwtDecode} from "jwt-decode";
 import socketService from '../services/Socket';
 
@@ -8,7 +8,6 @@ const MessageDisplay = () => {
     const [userId, setUserId] = useState<string | null>(null);
     const [username, setUsername] = useState<string | null>(null);
     const messageListenerRef = useRef<(data: any) => void>();
-
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {

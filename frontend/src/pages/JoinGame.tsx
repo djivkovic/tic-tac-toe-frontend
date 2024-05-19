@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {jwtDecode} from 'jwt-decode';
-
 const JoinGame = () => {
   const [id, setId] = useState<number | undefined>(undefined);
   const [username, setUsername] = useState("");

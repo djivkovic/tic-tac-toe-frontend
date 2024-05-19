@@ -5,7 +5,6 @@ if (!process.env.REACT_APP_HOST) {
 }
 
 const SOCKET_URL: string = process.env.REACT_APP_HOST;
-
 class SocketService {
     public socket: Socket;
     public messages: string[] = [];

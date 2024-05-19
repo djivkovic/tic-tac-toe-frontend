@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode";
 import TicTacToe from '../game/TicTacToe';
 import '../css/home.css';
-
 const Home = () => {
+    const host = process.env.REACT_APP_HOST;
     const [username, setUsername] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [singlePlayerSelected, setSinglePlayerSelected] = useState(false);
@@ -38,7 +38,7 @@ const Home = () => {
     const handleMultiPlayerClick = async () => {
         const gameType = "multiPlayer"; 
     
-        const response = await fetch("http://localhost:5000/create-game", {
+        const response = await fetch(`${host}/api/game/create-game`, {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ gameType })

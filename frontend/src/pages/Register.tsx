@@ -1,4 +1,4 @@
-import React, { useState, SyntheticEvent, useEffect } from 'react';
+import { useState, SyntheticEvent, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import '../css/auth.css';
 
@@ -13,7 +13,7 @@ const Register = () => {
   const handleRegister = async (e: SyntheticEvent) => {
     e.preventDefault();
 
-    let response = await fetch(`${host}/register`, {
+    let response = await fetch(`${host}/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username: username, password: password })
