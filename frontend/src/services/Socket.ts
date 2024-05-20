@@ -5,10 +5,11 @@ if (!process.env.REACT_APP_HOST) {
 }
 
 const SOCKET_URL: string = process.env.REACT_APP_HOST;
+
 class SocketService {
     public socket: Socket;
     public messages: string[] = [];
-    public players: string[] = []; 
+    public players: string[] = [];
     constructor() {
         const token = localStorage.getItem('token');
     

@@ -145,3 +145,56 @@
   border-radius: 5px;
   color: white;
 }
+
+/* makeMove */
+
+.title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.board {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px;
+  margin: 0 auto;
+  max-width: 170px; /* povećao sam max-width kako bi se prilagodio veličini ćelija */
+}
+
+.board-row {
+  display: flex;
+  justify-content: center;
+}
+
+.board-cell {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ddd;
+  cursor: pointer;
+  border: 1px solid #000;
+}
+
+.board-cell:hover {
+  background: #ccc;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+#players {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.loading-room{
+  text-align: center;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
