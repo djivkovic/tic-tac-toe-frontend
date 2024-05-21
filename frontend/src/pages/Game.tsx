@@ -29,18 +29,17 @@ const Game = () => {
         };
         joinRoom();
     }, [roomId]);
+
     useEffect(() => {
         socketService.listenOnRoom('update_players', (data: any) => {
-            setPlayers(() => {
-                return data.players;
-            });
+            setPlayers(data.players);
         });
+
         socketService.listenOnRoom('update_moves', (data: any) => {
-            setMoves(() => {
-                return data.moves;
-            });
-        } );
+            setMoves(prevMoves => [...prevMoves, data.move]);
+        });
     }, []);
+
     useEffect(() => {
         const joinRoomResponseListener = (response: any) => {
             if (!response.success) {
@@ -57,6 +56,38 @@ const Game = () => {
         };
     }, [players, roomId]);
 
+    useEffect(() => {
+        const updateBoardWithMoves = (movesToUse: any[]) => {
+            setBoard(prevBoard => {
+                const newBoard = prevBoard.map((row, i) =>
+                    row.map((cell, j) => {
+                        const move = movesToUse.find((m: any) => m.index && m.index.x === i && m.index.y === j);
+                        return move ? move.sign : cell;
+                    })
+                );
+                return newBoard;
+            });
+        };
+
+        updateBoardWithMoves(moves);
+    }, [moves]);
+
+    useEffect(() => {
+        const fetchMoves = async () => {
+            if (roomId) {
+                try {
+                    const response = await fetch(`${host}/api/game/moves/${roomId}`);
+                    const movesData = await response.json();
+                    setMoves(movesData);
+                } catch (error) {
+                    console.error('Error fetching moves:', error);
+                }
+            }
+        };
+
+        fetchMoves();
+    }, [roomId, host]);
+
     const handleCellClick = (row: number, col: number) => {
         if (!hasJoinedRoom) {
             alert("You have not joined the room yet.");
@@ -68,6 +99,7 @@ const Game = () => {
         setBoard(newBoard);
         makeMove(row, col);
     };
+
     const makeMove = async (row: number, col: number) => {
         try {
             const decodedToken = getTokenData();
@@ -75,11 +107,11 @@ const Game = () => {
 
             const move = {
                 index: { x: row, y: col },
-                sign: 'X', 
-                userId: userId 
+                sign: 'X',
+                userId: userId
             };
 
-            const response = await fetch(`${host}/api/game/make-move/${roomId}`,{
+            const response = await fetch(`${host}/api/game/make-move/${roomId}`, {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ move })
@@ -87,7 +119,7 @@ const Game = () => {
 
             const result = await response.json();
             console.log(result);
-    
+
         } catch (error: any) {
             console.log('Error: ', error);
         }
@@ -125,7 +157,7 @@ const Game = () => {
             <ul id="moves">
                 {moves.map((move, index) => (
                     <li key={index}>
-                        {`Move ${index+1}: (${move.index.x}, ${move.index.y}), Sign: ${move.sign}, User: ${move.userId}`}
+                        {`Move ${index + 1}: (${move.index.x}, ${move.index.y}), Sign: ${move.sign}, User: ${move.userId}`}
                     </li>
                 ))}
             </ul>
