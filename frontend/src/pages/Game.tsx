@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import socketService from '../services/Socket';
 import { getTokenData } from "../utils/getTokenData ";
+
 const Game = () => {
     const host = process.env.REACT_APP_HOST;
     const [players, setPlayers] = useState<string[]>([]);
@@ -9,30 +10,6 @@ const Game = () => {
     const [board, setBoard] = useState<(string | null)[][]>(Array(3).fill(Array(3).fill(null)));
     const { roomId } = useParams<{ roomId: string }>();
     const [moves, setMoves] = useState<any[]>([]);
-    const [playerSymbol, setPlayerSymbol] = useState<string | null>(null);
-    const [playerSymbolToSend, setPlayerSymbolToSend] = useState<string | null>(null);
-
-
-    const fetchPlayerSymbol = async () =>{
-        try{
-            const decodedToken = getTokenData();
-            const userId = decodedToken.id;
-
-            const response = await fetch(`http://localhost:5000/api/game/player-symbol/${roomId}/${userId}`,{
-                method:"GET",
-                headers: { 'Content-Type': 'application/json' },
-            });
-        
-                const data = await response.json();
-                setPlayerSymbolToSend(data.symbol);
-        }catch (err){
-            console.log(err);
-        }
-    }
-
-    useEffect(()=>{
-        fetchPlayerSymbol();
-    },[moves]);
 
     useEffect(() => {
         const joinRoom = async () => {
@@ -113,15 +90,10 @@ const Game = () => {
     }, [roomId, host]);
 
     const handleCellClick = (row: number, col: number) => {
-        console.log("playerSymbolToSend: ", playerSymbolToSend);
         if (!hasJoinedRoom) {
             alert("You have not joined the room yet.");
             return;
         }
-        const newBoard = board.map((r, i) => (
-            r.map((cell, j) => (i === row && j === col ? playerSymbol : cell))
-        ));
-        setBoard(newBoard);
         makeMove(row, col);
     };
 
@@ -130,9 +102,16 @@ const Game = () => {
             const decodedToken = getTokenData();
             const userId = decodedToken.id;
 
+            const responseSymbol = await fetch(`${host}/api/game/player-symbol/${roomId}/${userId}`, {
+                method: "GET",
+                headers: { 'Content-Type': 'application/json' },
+            });
+
+            const symbol = await responseSymbol.json();
+
             const move = {
                 index: { x: row, y: col },
-                sign: playerSymbolToSend,
+                sign: symbol.symbol,
                 userId: userId
             };
 
@@ -152,13 +131,10 @@ const Game = () => {
 
         } catch (error: any) {
             console.log('Error: ', error);
-            alert(`Failed to make move: ${error.message}`);
         }
     };
 
     const assignPlayer = async (symbol: string) => {
-        setPlayerSymbol(symbol);
-
         try {
             const decodedToken = getTokenData();
             const userId = decodedToken.id;
@@ -179,7 +155,6 @@ const Game = () => {
 
         } catch (error: any) {
             console.error('Error assigning player:', error);
-            alert("Failed to assign player");
         }
     };
 
@@ -204,9 +179,9 @@ const Game = () => {
                         ))}
                     </div>
                     
-                    <div>
-                        <button onClick={() => assignPlayer("X")}>Play as X</button>
-                        <button onClick={() => assignPlayer("O")}>Play as O</button>
+                    <div className="assign-btns">
+                        <button className="assignX" onClick={() => assignPlayer("X")}>Play as X</button>
+                        <button className="assignO" onClick={() => assignPlayer("O")}>Play as O</button>
                     </div>
                 </>
                 

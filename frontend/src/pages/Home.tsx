@@ -39,16 +39,21 @@ const Home = () => {
     const handleMultiPlayerClick = async () => {
         const gameType = "multiPlayer"; 
     
-        const response = await fetch(`${host}/api/game/create-game`, {
-            method: "POST",
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ gameType })
-        });
+        try{
+            const response = await fetch(`${host}/api/game/create-game`, {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ gameType })
+            });
+        
+            const data = await response.json();
+            const gameId = data.gameId;
     
-        const data = await response.json();
-        const gameId = data.gameId;
-
-        navigate(`/game/${gameId}`);
+            navigate(`/game/${gameId}`);
+        }
+        catch(err){
+            alert(err);
+        }
     };
 
     return (
