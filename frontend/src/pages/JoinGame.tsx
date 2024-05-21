@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {jwtDecode} from 'jwt-decode';
+import { getTokenData } from "../utils/getTokenData ";
 const JoinGame = () => {
   const [id, setId] = useState<number | undefined>(undefined);
   const [username, setUsername] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const decodedToken: { username: string } = jwtDecode(token);
-      setUsername(decodedToken.username);
+    const decodedToken = getTokenData();
+    const username = decodedToken.username;
+    if (decodedToken) {
+      setUsername(username);
     }
   }, []);
   const joinGame = () => {

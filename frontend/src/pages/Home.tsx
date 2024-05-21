@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { jwtDecode } from "jwt-decode";
 import TicTacToe from '../game/TicTacToe';
+import { getTokenData } from "../utils/getTokenData ";
 import '../css/home.css';
 const Home = () => {
     const host = process.env.REACT_APP_HOST;
@@ -22,10 +22,11 @@ const Home = () => {
         setHideCreateNewGame(false);
     };
     useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-        const decodedToken: any = jwtDecode(token); 
-        setUsername(decodedToken.username);
+        const decodedToken = getTokenData();
+        const username = decodedToken.username;
+
+    if (decodedToken) {
+        setUsername(username);
     }
     }, []);
 
