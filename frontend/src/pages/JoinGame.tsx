@@ -6,7 +6,6 @@ const JoinGame = () => {
   const [username, setUsername] = useState("");
   const navigate = useNavigate();
 
-
   const findGameById = async () => {
         const response = await fetch(`http://localhost:5000/api/game/find-game/${id}`, {
             method: "GET",

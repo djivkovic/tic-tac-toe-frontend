@@ -35,7 +35,6 @@ const Home = () => {
         setShowModal(false); 
         setGameType("singlePlayer");
     };
-
     const handleMultiPlayerClick = async () => {
         const gameType = "multiPlayer"; 
     
