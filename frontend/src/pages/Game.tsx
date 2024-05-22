@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import socketService from '../services/Socket';
 import { getTokenData } from "../utils/getTokenData ";
 const Game = () => {
@@ -10,7 +10,30 @@ const Game = () => {
     const { roomId } = useParams<{ roomId: string }>();
     const [moves, setMoves] = useState<any[]>([]);
     const [userSymbol, setUserSymbol] = useState<string | null>(null);
+    const navigate = useNavigate();
     const [flag, setFlag] = useState(false);
+
+    const findGameById = async () => {
+        const response = await fetch(`${host}/api/game/find-game/${roomId}`, {
+            method: "GET",
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        const data = await response.json();
+        return data.found;
+    };
+
+    const checkGame = async () => {
+        const foundGame = await findGameById();
+
+        if(!foundGame){
+            navigate("/");
+        }else{
+            navigate(`/game/${roomId}`);
+        }
+    }
+
+    checkGame();
 
     useEffect(() => {
         const joinRoom = async () => {

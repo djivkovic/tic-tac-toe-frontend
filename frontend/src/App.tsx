@@ -16,8 +16,8 @@ function App() {
         <Nav/>
         <Routes>
           <Route path='/register' element={<Register/>}  />
-          <Route path='/join-game' element={<JoinGame/>}/>
-          <Route path='/game/:roomId' element={<Game/>}/>
+          <Route path='/join-game' element={ isLoggedIn ? <JoinGame/> : <Navigate to="/" />}/>
+          <Route path='/game/:roomId' element={ isLoggedIn ? <Game/> : <Navigate to="/"/>}/>
           <Route path='/home' element={isLoggedIn ? <Home /> : <Navigate to="/" />}  />
           <Route path='/' element={isLoggedIn ? <Navigate to="/home" /> : <Login/>}  />
           <Route path="*" element={<NotFound />} />

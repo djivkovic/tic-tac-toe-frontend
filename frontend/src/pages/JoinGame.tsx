@@ -5,16 +5,17 @@ const JoinGame = () => {
   const [id, setId] = useState<number | undefined>(undefined);
   const [username, setUsername] = useState("");
   const navigate = useNavigate();
+  const host = process.env.REACT_APP_HOST;
 
   const findGameById = async () => {
-        const response = await fetch(`http://localhost:5000/api/game/find-game/${id}`, {
+        const response = await fetch(`${host}/api/game/find-game/${id}`, {
             method: "GET",
             headers: { 'Content-Type': 'application/json' }
         });
 
         const data = await response.json();
         return data.found;
-};
+  };
 
   useEffect(() => {
     const decodedToken = getTokenData();
@@ -23,6 +24,7 @@ const JoinGame = () => {
       setUsername(username);
     }
   }, []);
+  
   const joinGame = async () => {
     const foundGame = await findGameById();
 
