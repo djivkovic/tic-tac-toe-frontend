@@ -6,6 +6,17 @@ const JoinGame = () => {
   const [username, setUsername] = useState("");
   const navigate = useNavigate();
 
+
+  const findGameById = async () => {
+        const response = await fetch(`http://localhost:5000/api/game/find-game/${id}`, {
+            method: "GET",
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        const data = await response.json();
+        return data.found;
+};
+
   useEffect(() => {
     const decodedToken = getTokenData();
     const username = decodedToken.username;
@@ -13,11 +24,13 @@ const JoinGame = () => {
       setUsername(username);
     }
   }, []);
-  const joinGame = () => {
-    if (id !== undefined && username) {
+  const joinGame = async () => {
+    const foundGame = await findGameById();
+
+    if(foundGame && username){
       navigate(`/game/${id}`);
-    } else {
-      alert('Please enter a valid game ID and make sure you are logged in.');
+    }else{
+      alert("Failed to join game!");
     }
   };
 

@@ -53,6 +53,7 @@ const Home = () => {
         }
         catch(err){
             alert(err);
+            navigate(`/home`);
         }
     };
 

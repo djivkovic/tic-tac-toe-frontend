@@ -146,8 +146,6 @@
   color: white;
 }
 
-/* makeMove */
-
 .title {
   text-align: center;
   margin-bottom: 20px;
@@ -159,7 +157,7 @@
   justify-content: center;
   gap: 5px;
   margin: 0 auto;
-  max-width: 170px; /* povećao sam max-width kako bi se prilagodio veličini ćelija */
+  max-width: 170px; 
 }
 
 .board-row {
@@ -199,7 +197,7 @@ ul {
   letter-spacing: 1px;
 }
 
-.assign-btns{
+.assign-buttons{
   display: flex;
   flex-direction: column;
   margin-bottom: 10px;

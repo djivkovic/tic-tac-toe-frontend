@@ -122,15 +122,14 @@ const Game = () => {
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to make move');
+                alert('Failed to make move');
             }
 
             const result = await response.json();
             console.log(result);
 
         } catch (error: any) {
-            console.log('Error: ', error);
+            console.log(error);
         }
     };
 
@@ -146,8 +145,7 @@ const Game = () => {
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to assign player');
+                alert('Failed to assign player');
             }
 
             const result = await response.json();
@@ -179,7 +177,7 @@ const Game = () => {
                         ))}
                     </div>
                     
-                    <div className="assign-btns">
+                    <div className="assign-buttons">
                         <button className="assignX" onClick={() => assignPlayer("X")}>Play as X</button>
                         <button className="assignO" onClick={() => assignPlayer("O")}>Play as O</button>
                     </div>
