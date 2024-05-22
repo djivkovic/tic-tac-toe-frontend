@@ -41,11 +41,11 @@ const Game = () => {
         });
     }, []);
 
-    useEffect(() => {   
+    useEffect(() => {
         socketService.listenOnRoom('update_sign', () => {
             setFlag(true);
         });
-    },[flag]);
+    }, [flag]);
 
     useEffect(() => {
         const joinRoomResponseListener = (response: any) => {
@@ -109,7 +109,7 @@ const Game = () => {
 
                     if (response.ok) {
                         const data = await response.json();
-                        console.log("USER SYMBOL: ", data.symbol)
+                        console.log("USER SYMBOL: ", data.symbol);
                         setUserSymbol(data.symbol);
                     }
                 } catch (error) {
@@ -126,6 +126,13 @@ const Game = () => {
             alert("You have not joined the room yet.");
             return;
         }
+
+        const isBoardFull = board.every(row => row.every(cell => cell !== null));
+        if (isBoardFull) {
+            alert("The board is full. No more moves can be made.");
+            return;
+        }
+
         makeMove(row, col);
     };
 
@@ -143,7 +150,7 @@ const Game = () => {
             const response = await fetch(`${host}/api/game/make-move/${roomId}`, {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ move })
+                body: JSON.stringify({ move, userId })
             });
 
             if (!response.ok) {
@@ -199,14 +206,14 @@ const Game = () => {
                             </div>
                         ))}
                     </div>
-                    
-                {!userSymbol && hasJoinedRoom && !flag &&(
-                    <div className="assign-buttons">
-                        <button className="assignX" onClick={() => assignPlayer("X")}>Play as X</button>
-                        <button className="assignO" onClick={() => assignPlayer("O")}>Play as O</button>
+
+                    {!userSymbol && hasJoinedRoom && !flag && (
+                        <div className="assign-buttons">
+                            <button className="assignX" onClick={() => assignPlayer("X")}>Play as X</button>
+                            <button className="assignO" onClick={() => assignPlayer("O")}>Play as O</button>
                         </div>
-                )}
-                    
+                    )}
+
                     {userSymbol && <p>Your symbol: {userSymbol}</p>}
                 </>
             ) : (
