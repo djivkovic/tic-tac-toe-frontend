@@ -1,23 +1,37 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {jwtDecode} from 'jwt-decode';
+import { getTokenData } from "../utils/getTokenData ";
 const JoinGame = () => {
   const [id, setId] = useState<number | undefined>(undefined);
   const [username, setUsername] = useState("");
   const navigate = useNavigate();
+  const host = process.env.REACT_APP_HOST;
+
+  const findGameById = async () => {
+        const response = await fetch(`${host}/api/game/find-game/${id}`, {
+            method: "GET",
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        const data = await response.json();
+        return data.found;
+  };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const decodedToken: { username: string } = jwtDecode(token);
-      setUsername(decodedToken.username);
+    const decodedToken = getTokenData();
+    const username = decodedToken.username;
+    if (decodedToken) {
+      setUsername(username);
     }
   }, []);
-  const joinGame = () => {
-    if (id !== undefined && username) {
+  
+  const joinGame = async () => {
+    const foundGame = await findGameById();
+
+    if(foundGame && username){
       navigate(`/game/${id}`);
-    } else {
-      alert('Please enter a valid game ID and make sure you are logged in.');
+    }else{
+      alert("Failed to join game!");
     }
   };
 

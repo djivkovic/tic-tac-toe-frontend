@@ -145,3 +145,98 @@
   border-radius: 5px;
   color: white;
 }
+
+.title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.board {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px;
+  margin: 0 auto;
+  max-width: 170px; 
+}
+
+.board-row {
+  display: flex;
+  justify-content: center;
+}
+
+.board-cell {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ddd;
+  cursor: pointer;
+  border: 1px solid #000;
+}
+
+.board-cell:hover {
+  background: #ccc;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+#players {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.loading-room{
+  text-align: center;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.assign-buttons{
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+  margin-left: 100px;
+}
+
+.assignX{
+  width: 140px;
+  padding: 7px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  border: 1px solid black;
+  color:white;
+  border-radius: 20px;
+  background-color: rgb(113, 214, 217);
+  cursor: pointer;
+  transition: background-color 0.5s ease;
+  margin-bottom: 10px;
+}
+
+.assignX:hover{
+  background-color: rgb(73, 169, 172);
+}
+
+.assignO{
+  width: 140px;
+  padding: 7px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  border: 1px solid black;
+  color:white;
+  border-radius: 20px;
+  background-color: rgb(172, 224, 99);
+  cursor: pointer;
+  transition: background-color 0.5s ease;
+}
+
+.assignO:hover{
+  background-color: rgb(133, 185, 60);
+}
