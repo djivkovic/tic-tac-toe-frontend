@@ -14,26 +14,37 @@ const Game = () => {
     const [flag, setFlag] = useState(false);
 
     const findGameById = async () => {
-        const response = await fetch(`${host}/api/game/find-game/${roomId}`, {
-            method: "GET",
-            headers: { 'Content-Type': 'application/json' }
-        });
+        try {
+            const response = await fetch(`${host}/api/game/find-game/${roomId}`, {
+                method: "GET",
+                headers: { 'Content-Type': 'application/json' }
+            });
 
-        const data = await response.json();
-        return data.found;
+            if (!response.ok) {
+                throw new Error('Failed to find game');
+            }
+
+            const data = await response.json();
+            return data.found;
+        } catch (error) {
+            console.error('Error finding game by ID:', error);
+            return false;
+        }
     };
 
     const checkGame = async () => {
         const foundGame = await findGameById();
 
-        if(!foundGame){
+        if (!foundGame) {
             navigate("/");
-        }else{
+        } else {
             navigate(`/game/${roomId}`);
         }
-    }
+    };
 
-    checkGame();
+    useEffect(() => {
+        checkGame();
+    }, []);
 
     useEffect(() => {
         const joinRoom = async () => {
@@ -46,8 +57,7 @@ const Game = () => {
 
                     socketService.joinRoom(roomNumber, userId, username);
                 } catch (error: any) {
-                    console.error(`Failed to join room ${roomNumber}`, error);
-                    alert(`Failed to join room ${roomNumber}: ${error.message}`);
+                    alert(`Failed to join room ${roomNumber}`);
                 }
             }
         };
@@ -107,11 +117,13 @@ const Game = () => {
             if (roomId) {
                 try {
                     const response = await fetch(`${host}/api/game/moves/${roomId}`);
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch moves');
+                    }
                     const movesData = await response.json();
                     setMoves(movesData);
-                } catch (error) {
-                    console.error('Error fetching moves:', error);
-                    alert(`Error fetching moves: ${error}`);
+                } catch (error :any) {
+                    alert(`${error.message}`);
                 }
             }
         };
@@ -132,10 +144,11 @@ const Game = () => {
 
                     if (response.ok) {
                         const data = await response.json();
-                        console.log("USER SYMBOL: ", data.symbol);
                         setUserSymbol(data.symbol);
+                    } else {
+                        throw new Error('Failed to fetch user symbol');
                     }
-                } catch (error) {
+                } catch (error:any) {
                     console.error('Error fetching user symbol:', error);
                 }
             }
@@ -177,14 +190,14 @@ const Game = () => {
             });
 
             if (!response.ok) {
-                alert('Failed to make move');
+                throw new Error('Failed to make move');
             }
 
             const result = await response.json();
             console.log(result);
 
         } catch (error: any) {
-            console.log(error);
+            alert(`${error.message}`);
         }
     };
 
@@ -200,12 +213,12 @@ const Game = () => {
             });
 
             if (!response.ok) {
-                alert('Failed to assign player');
+                throw new Error('Failed to assign player');
             } else {
                 setUserSymbol(symbol);
             }
-        } catch (error) {
-            console.error('Error assigning player:', error);
+        } catch (error :any) {
+            alert(`${error.message}`);
         }
     };
 
@@ -248,13 +261,15 @@ const Game = () => {
                 ))}
             </ul>
 
-            <ul id="moves">
-                {moves.map((move, index) => (
-                    <li key={index}>
-                        {`Move ${index + 1}: (${move.index.x}, ${move.index.y}), Sign: ${move.sign}, User: ${move.userId}`}
-                    </li>
-                ))}
-            </ul>
+            {players.length === 2 &&  hasJoinedRoom && (
+                <ul id="moves">
+                    {moves.map((move, index) => (
+                        <li key={index}>
+                            {`Move ${index + 1}: (${move.index.x}, ${move.index.y}), Sign: ${move.sign}, User: ${move.userId}`}
+                        </li>
+                    ))}
+                </ul>
+            )}
         </>
     );
 };
