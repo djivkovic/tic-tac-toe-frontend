@@ -10,8 +10,9 @@ const Game = () => {
     const { roomId } = useParams<{ roomId: string }>();
     const [moves, setMoves] = useState<any[]>([]);
     const [userSymbol, setUserSymbol] = useState<string | null>(null);
-    const navigate = useNavigate();
+    const [playerDetails, setPlayerDetails] = useState<{ [key: string]: string }>({});
     const [flag, setFlag] = useState(false);
+    const navigate = useNavigate();
 
     const findGameById = async () => {
         try {
@@ -111,6 +112,34 @@ const Game = () => {
 
         updateBoardWithMoves(moves);
     }, [moves]);
+
+    useEffect(() => {
+        const fetchPlayerDetails = async () => {
+            try {
+                const response = await fetch(`${host}/api/game/players/${roomId}`, {
+                    method: "GET",
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch player details');
+                }
+
+                const data = await response.json();
+
+                const playerMap = data.reduce((acc: { [key: string]: string }, player: any) => {
+                    acc[player._id] = player.username;
+                    return acc;
+                }, {});
+
+                setPlayerDetails(playerMap);
+            } catch (error: any) {
+                console.error('Error fetching player details:', error);
+            }
+        };
+
+        fetchPlayerDetails();
+    }, [roomId, host]);
 
     useEffect(() => {
         const fetchMoves = async () => {
@@ -265,7 +294,7 @@ const Game = () => {
                 <ul id="moves">
                     {moves.map((move, index) => (
                         <li key={index}>
-                            {`Move ${index + 1}: (${move.index.x}, ${move.index.y}), Sign: ${move.sign}, User: ${move.userId}`}
+                            {`Move ${index + 1}: (${move.index.x}, ${move.index.y}), Sign: ${move.sign}, User: ${playerDetails[move.userId] || move.userId}`}
                         </li>
                     ))}
                 </ul>

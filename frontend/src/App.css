@@ -240,3 +240,10 @@ ul {
 .assignO:hover{
   background-color: rgb(133, 185, 60);
 }
+
+.error-msg{
+  text-align: center;
+  font-weight: 700;
+  font-size: 36px;
+  letter-spacing: 1px;
+}
