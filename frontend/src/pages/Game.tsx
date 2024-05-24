@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import socketService from '../services/Socket';
 import { getTokenData } from "../utils/getTokenData ";
+import '../css/game.css';
 const Game = () => {
     const host = process.env.REACT_APP_HOST;
     const [players, setPlayers] = useState<string[]>([]);
@@ -43,9 +44,7 @@ const Game = () => {
         }
     };
 
-    useEffect(() => {
-        checkGame();
-    }, []);
+    checkGame();
 
     useEffect(() => {
         const joinRoom = async () => {
@@ -279,7 +278,7 @@ const Game = () => {
                         </div>
                     )}
 
-                    {userSymbol && <p>Your symbol: {userSymbol}</p>}
+                    {userSymbol && <p className="player-symbol">Your symbol:  <span>{userSymbol}</span></p>}
                 </>
             ) : (
                 <p className="loading-room">Joining room...</p>
@@ -291,13 +290,15 @@ const Game = () => {
             </ul>
 
             {players.length === 2 &&  hasJoinedRoom && (
-                <ul id="moves">
+                <div className="moves-container">
+                     <ul id="moves">
                     {moves.map((move, index) => (
                         <li key={index}>
                             {`Move ${index + 1}: (${move.index.x}, ${move.index.y}), Sign: ${move.sign}, User: ${playerDetails[move.userId] || move.userId}`}
                         </li>
                     ))}
-                </ul>
+                    </ul>
+                </div>
             )}
         </>
     );
