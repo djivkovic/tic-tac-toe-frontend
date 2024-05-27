@@ -1,0 +1,139 @@
+.board {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 3px;
+    margin: 0 auto;
+    max-width: 170px; 
+}
+  
+.board-row {
+    display: flex;
+    justify-content: center;
+}
+  
+.board-cell {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ddd;
+    margin: 1px;
+    cursor: pointer;
+    border: 1px solid #000;
+}
+  
+.board-cell:hover {
+    background: #ccc;
+}
+  
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+  
+#players {
+    margin-top: 20px;
+    text-align: center;
+}
+  
+.loading-room {
+    text-align: center;
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+  
+.assign-buttons {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    margin-left: 100px;
+}
+  
+.assignX {
+    width: 140px;
+    padding: 7px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    border: 1px solid black;
+    color:white;
+    border-radius: 20px;
+    background-color: rgb(113, 214, 217);
+    cursor: pointer;
+    transition: background-color 0.5s ease;
+    margin-bottom: 10px;
+}
+  
+.assignX:hover {
+    background-color: rgb(73, 169, 172);
+}
+  
+.assignO {
+    width: 140px;
+    padding: 7px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    border: 1px solid black;
+    color:white;
+    border-radius: 20px;
+    background-color: rgb(172, 224, 99);
+    cursor: pointer;
+    transition: background-color 0.5s ease;
+}
+  
+.assignO:hover {
+    background-color: rgb(133, 185, 60);
+}
+  
+.error-msg {
+    text-align: center;
+    font-weight: 700;
+    font-size: 36px;
+    letter-spacing: 1px;
+}
+
+.title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.player-symbol {
+    font-size: 25px;
+    text-align: center;
+}
+
+.player-symbol span {
+    font-weight: 700;
+}
+
+.moves-container {
+    position: relative; 
+    margin-top: 20px; 
+    width: 300px;
+    padding: 15px;
+    margin: 0 auto;
+    border-radius: 20px;
+    text-align: center;
+}
+
+#moves li {
+    background-color: #f0f0f0; 
+    padding: 5px 10px; 
+    border-radius: 5px; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.7); 
+    font-family: Arial, sans-serif; 
+    font-size: 16px; 
+    margin-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.winner-info {
+    text-align: center;
+    font-size: 20px;
+    letter-spacing: 1.5px;
+    font-weight: bold;
+}

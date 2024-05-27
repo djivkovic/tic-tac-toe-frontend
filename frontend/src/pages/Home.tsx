@@ -10,7 +10,18 @@ const Home = () => {
     const [singlePlayerSelected, setSinglePlayerSelected] = useState(false);
     const [hideCreateNewGame, setHideCreateNewGame] = useState(false);
     const [gameType, setGameType] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [gameId, setGameId] = useState("");
+
     const navigate = useNavigate();
+
+    const openModal = () => {
+        setIsModalOpen(true);
+      };
+    
+      const closeModal = () => {
+        setIsModalOpen(false);
+      };
 
     const openCreateGameModal = () => {
         setShowModal(true);
@@ -56,6 +67,10 @@ const Home = () => {
         }
     };
 
+    const handleSearchGame = () =>{
+        navigate(`/find-game/${gameId}`);
+    }
+
     return (
         <>
         <div className='home-container'>
@@ -63,6 +78,21 @@ const Home = () => {
             <p>Welcome, {username} </p> 
             {!hideCreateNewGame && <button className='create-new-game-btn' onClick={openCreateGameModal}>Create New Game</button>}
            <button className='join-game-btn'><a href="join-game">Join Game</a></button>
+           <button className='find-game' onClick={openModal} >Find Game</button>
+            {isModalOpen && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <span className="close" onClick={closeModal}>&times;</span>
+                        <label>Enter game id:</label>
+                        <input type="number" onChange={(e)=>{
+                            setGameId(e.target.value)
+                        }} />
+                        <button className='search-game' onClick={()=>{
+                            handleSearchGame();
+                        }}>Search Game</button>
+                    </div>
+                </div>
+            )}
             {showModal && (
                 <div className="modal">
                     <div className="modal-content">
