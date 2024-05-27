@@ -13,7 +13,25 @@ const Game = () => {
     const [userSymbol, setUserSymbol] = useState<string | null>(null);
     const [playerDetails, setPlayerDetails] = useState<{ [key: string]: string }>({});
     const [flag, setFlag] = useState(false);
+    const [winner, setWinner] = useState<string | null>(null);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchWinner = async () => {
+            try {
+                const response = await fetch(`${host}/api/game/winner/${roomId}`); 
+                if (!response.ok) {
+                    throw new Error('Failed to fetch winner');
+                }
+                const data = await response.json();
+                setWinner(data.winner); 
+            } catch (error) {
+                console.error('Error fetching winner:', error);
+            }
+        };
+
+        fetchWinner();
+    }, [roomId, host, moves]);
 
     const findGameById = async () => {
         try {
@@ -111,7 +129,6 @@ const Game = () => {
 
         updateBoardWithMoves(moves);
     }, [moves]);
-
     useEffect(() => {
         const fetchPlayerDetails = async () => {
             try {
@@ -138,7 +155,7 @@ const Game = () => {
         };
 
         fetchPlayerDetails();
-    }, [roomId, host]);
+    }, [roomId, host, players]);
 
     useEffect(() => {
         const fetchMoves = async () => {
@@ -183,7 +200,7 @@ const Game = () => {
         };
 
         fetchUserSymbol();
-    }, [roomId, host, flag]);
+    }, [roomId, host, flag, playerDetails]);
 
     const handleCellClick = (row: number, col: number) => {
         if (!hasJoinedRoom) {
@@ -221,9 +238,6 @@ const Game = () => {
                 throw new Error('Failed to make move');
             }
 
-            const result = await response.json();
-            console.log(result);
-
         } catch (error: any) {
             alert(`${error.message}`);
         }
@@ -251,10 +265,12 @@ const Game = () => {
     };
 
     return (
-        <>
-            <h2 className="title">Game {roomId}</h2>
+        <> 
             {hasJoinedRoom ? (
                 <>
+                    <h2 className="title">Game {roomId}</h2>
+                    {winner && winner !== 'Draw' && <p className="winner-info">Winner: {playerDetails[winner] || winner}</p>}
+                    {winner === 'Draw' && <p className="winner-info">Draw</p>} 
                     <div className="board">
                         {board.map((row, rowIndex) => (
                             <div key={rowIndex} className="board-row">

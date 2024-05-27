@@ -1,4 +1,4 @@
-.not-found{
+.not-found {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -7,11 +7,11 @@
     min-height: 80vh;
   }
   
-  .not-found h2{
+  .not-found h2 {
     font-size: 55px;
   }
   
-  .not-found p{
+  .not-found p {
     font-size: 20px;
   }
   

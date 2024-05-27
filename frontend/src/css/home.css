@@ -1,4 +1,4 @@
-.home-container{
+.home-container {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -7,11 +7,11 @@
         color: white;
 }
 
-.home-container h1{
+.home-container h1 {
     text-align: center;
 }
 
-.create-new-game-btn{
+.create-new-game-btn {
     border: 1px solid darkblue;
     height: 35px;
     padding: 10px 10px;
@@ -23,7 +23,7 @@
     cursor: pointer;
 }
 
-.create-new-game-btn:hover{
+.create-new-game-btn:hover {
     background-color: #0056b3;
 }
 
@@ -105,7 +105,7 @@
     height: 100vh; 
   }
   
-.join-game-btn, .find-game{
+.join-game-btn, .find-game {
     border: 1px solid darkblue;
     background-color: #007bff;
     padding: 8px;
@@ -121,15 +121,15 @@
     color: white;
 }
 
-.join-game-btn:hover, .find-game:hover{
+.join-game-btn:hover, .find-game:hover {
     background-color: #0056b3;
 }
 
-.join-game-input, input{
+.join-game-input, input {
     width: 500px;
 }
 
-.join-game-input{
+.join-game-input {
     width: 50%;
     padding: 10px;
     border: 1px solid #ccc;
@@ -147,7 +147,7 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
-.join-game{
+.join-game {
     width: 50%;
     color: black;
     font-size: 17px;
@@ -160,7 +160,7 @@ input::-webkit-inner-spin-button {
 
 }
 
-.join-game:hover{
+.join-game:hover {
     background-color: rgb(69, 213, 213);
 }
 
@@ -185,7 +185,7 @@ input::-webkit-inner-spin-button {
     width: 60%;
   }
 
-  .modal-content input{
+  .modal-content input {
     width: 76%;
   }
   
@@ -203,7 +203,7 @@ input::-webkit-inner-spin-button {
     cursor: pointer;
   }
 
-  .search-game{
+  .search-game {
     width: 77%;
     margin-right: 20px;
     margin-top: 10px;
@@ -216,6 +216,16 @@ input::-webkit-inner-spin-button {
     transition: background-color 0.5s ease;
   }
 
-  .search-game:hover{
+  .search-game:hover {
     background-color: #007bff;
   }
+
+  input[type="number"] {
+    width: 77%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    text-align: center;
+    font-size: 19px;
+}

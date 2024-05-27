@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { getTokenData } from "../utils/getTokenData ";
 
 const FindGame = () => {
     const host = process.env.REACT_APP_HOST;
@@ -9,18 +10,22 @@ const FindGame = () => {
     const [board, setBoard] = useState<(string | null)[][]>(Array(3).fill(Array(3).fill(null)));
     const [moves, setMoves] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
+    const [winner, setWinner] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
+    const decodedToken = getTokenData();
+    const userId = decodedToken.id;
 
     useEffect(() => {
         const fetchGameDetails = async () => {
             try {
-                const response = await fetch(`${host}/api/game/find-game/${gameId}`, {
+                const response = await fetch(`${host}/api/game/find-game/${gameId}/${userId}`, {
                     method: "GET",
                     headers: { 'Content-Type': 'application/json' }
                 });
 
                 if (!response.ok) {
-                    throw new Error('Game not found!');
+                    navigate('/');
                 }
 
                 const data = await response.json();
@@ -33,6 +38,7 @@ const FindGame = () => {
                         initialBoard[move.index.x][move.index.y] = move.sign;
                     });
                     setBoard(initialBoard);
+                    setWinner(playerDetails[data.game.winner] || data.game.winner);
                 } else {
                     setError('Game not found!');
                 }
@@ -69,7 +75,7 @@ const FindGame = () => {
 
         fetchPlayerDetails();
         fetchGameDetails();
-    }, [gameId, host]);
+    }, [gameId, host, navigate, userId, playerDetails]);
 
     if (loading) {
         return <p>Loading game details...</p>;
@@ -82,6 +88,8 @@ const FindGame = () => {
     return (
         <>
             <h2 className="title">Game {gameId}</h2>
+            {winner && winner !== 'Draw' && <p className="winner-info">Winner: {playerDetails[winner] || winner}</p>}
+            {winner === 'Draw' && <p className="winner-info">Draw</p>} 
             <div className="board">
                 {board.map((row, rowIndex) => (
                     <div key={rowIndex} className="board-row">
@@ -99,7 +107,7 @@ const FindGame = () => {
                     <li key={index}>{playerDetails[player] || player}</li>
                 ))}
             </ul>
-
+        <div className="moves-container">
             <ul id="moves">
                 {moves.map((move, index) => (
                     <li key={index}>
@@ -107,6 +115,7 @@ const FindGame = () => {
                     </li>
                 ))}
             </ul>
+        </div>
         </>
     );
 };
