@@ -16,6 +16,10 @@ class SocketService {
         this.socket.emit("join_room", { room, userId, username });
     }
 
+    public joinSinglePlayerRoom(room: number, userId: string, username: string) {
+        this.socket.emit("join_singlePlayer_room", { room, userId, username });
+    }
+
     public listenOnRoom(room: string, callback: any) {
         this.socket.on(room, callback)
     }

@@ -242,7 +242,7 @@ const Game = () => {
             alert(`${error.message}`);
         }
     };
-
+    
     const assignPlayer = async (symbol: string) => {
         try {
             const decodedToken = getTokenData();

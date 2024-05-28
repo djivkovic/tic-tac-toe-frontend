@@ -1,15 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import TicTacToe from '../game/TicTacToe';
 import { getTokenData } from "../utils/getTokenData ";
 import '../css/home.css';
 const Home = () => {
     const host = process.env.REACT_APP_HOST;
     const [username, setUsername] = useState('');
     const [showModal, setShowModal] = useState(false);
-    const [singlePlayerSelected, setSinglePlayerSelected] = useState(false);
     const [hideCreateNewGame, setHideCreateNewGame] = useState(false);
-    const [gameType, setGameType] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [gameId, setGameId] = useState("");
 
@@ -41,10 +38,25 @@ const Home = () => {
     }
     }, []);
 
-    const handleSinglePlayerClick = () => {
-        setSinglePlayerSelected(true); 
-        setShowModal(false); 
-        setGameType("singlePlayer");
+    const handleSinglePlayerClick = async () => {
+        const gameType = "singlePlayer";
+
+        try{
+            const response = await fetch(`${host}/api/game/create-game`, {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ gameType })
+            });
+        
+            const data = await response.json();
+            const gameId = data.gameId;
+    
+            navigate(`/singlePlayer-game/${gameId}`);
+        }
+        catch(err){
+            alert(err);
+            navigate(`/home`);
+        }
     };
     const handleMultiPlayerClick = async () => {
         const gameType = "multiPlayer"; 
@@ -104,9 +116,6 @@ const Home = () => {
                     </div>
                 </div>
             )}
-            <div className='game-container'>
-                {singlePlayerSelected && <TicTacToe gameType={gameType} />}
-            </div>
         </div>
         </>
     );
