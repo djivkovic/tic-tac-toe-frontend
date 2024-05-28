@@ -9,6 +9,7 @@ import JoinGame from './pages/JoinGame';
 import Game from './pages/Game';
 import NotFound from './pages/NotFound';
 import FindGame from './pages/FindGame';
+import SinglePlayerGame from './pages/SinglePlayerGame';
 function App() {
   const isLoggedIn = localStorage.getItem('token');
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path='/register' element={<Register/>}  />
           <Route path='/join-game' element={ isLoggedIn ? <JoinGame/> : <Navigate to="/" />}/>
           <Route path='/game/:roomId' element={ isLoggedIn ? <Game/> : <Navigate to="/"/>}/>
+          <Route path='/singlePlayer-game/:roomId' element={ isLoggedIn ? <SinglePlayerGame/> : <Navigate to="/"/>}/>
           <Route path='/find-game/:gameId' element={ isLoggedIn ? <FindGame/> : <Navigate to="/" />}/>
           <Route path='/home' element={isLoggedIn ? <Home /> : <Navigate to="/" />}  />
           <Route path='/' element={isLoggedIn ? <Navigate to="/home" /> : <Login/>}  />
