@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getTokenData } from "../utils/getTokenData ";
+import { showErrorToast } from '../utils/toastNotifications';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const JoinGame = () => {
   const [id, setId] = useState<number | undefined>(undefined);
   const [username, setUsername] = useState("");
@@ -31,7 +35,7 @@ const JoinGame = () => {
     if(foundGame && username){
       navigate(`/game/${id}`);
     }else{
-      alert("Failed to join game!");
+      showErrorToast('Failed to join game!');
     }
   };
 
@@ -45,6 +49,7 @@ const JoinGame = () => {
         placeholder="Enter game id..." 
       />
       <button className="join-game" onClick={joinGame}>Join Game</button>
+      <ToastContainer />
     </div>
   );
 };

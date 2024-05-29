@@ -1,5 +1,8 @@
 import { useState, SyntheticEvent, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
+import { showErrorToast } from '../utils/toastNotifications';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import '../css/auth.css';
 
 const Login = () => {
@@ -27,7 +30,7 @@ const Login = () => {
       localStorage.setItem('token', JSON.stringify(result.auth));
       window.location.reload();
     } else {
-      alert("Please enter valid details");
+      showErrorToast("Please enter valid details!");
     }
   }
 
@@ -75,6 +78,7 @@ const Login = () => {
           </button>
         </form>
       </div>
+      <ToastContainer/>
     </>
   );
 };

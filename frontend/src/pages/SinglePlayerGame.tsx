@@ -2,6 +2,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getTokenData } from "../utils/getTokenData ";
 import socketService from '../services/Socket';
+import { showErrorToast } from '../utils/toastNotifications';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import '../css/game.css';
 
 const SinglePlayerGame = () => {
@@ -17,6 +20,7 @@ const SinglePlayerGame = () => {
     useEffect(() => {
         const joinRoomResponseListener = (response: any) => {
             if (!response.success) {
+                showErrorToast(response.message);
                 console.log(response.message);
             } else {
                 setHasJoinedRoom(true);
@@ -89,7 +93,7 @@ const SinglePlayerGame = () => {
 
                     socketService.joinSinglePlayerRoom(roomNumber, userId, username);
                 } catch (error: any) {
-                    alert(`Failed to join room ${roomNumber}`);
+                    showErrorToast(`Failed to join room ${roomId}`);
                 }
             }
         };
@@ -143,7 +147,8 @@ const SinglePlayerGame = () => {
     const handleCellClick = (row: number, col: number) => {
         const isBoardFull = board.every(row => row.every(cell => cell !== null));
         if (isBoardFull) {
-            alert("The board is full. No more moves can be made.");
+            showErrorToast("The board is full. No more moves can be made!");
+            console.log("The board is full. No more moves can be made!");
             return;
         }
 
@@ -172,7 +177,7 @@ const SinglePlayerGame = () => {
             }
 
         } catch (error: any) {
-            alert(`${error.message}`);
+            showErrorToast(error.message);
         }
     };
 
@@ -187,7 +192,7 @@ const SinglePlayerGame = () => {
                     const movesData = await response.json();
                     setMoves(movesData);
                 } catch (error: any) {
-                    alert(`${error.message}`);
+                    console.log(error.message);
                 }
             }
         };
@@ -204,8 +209,8 @@ const SinglePlayerGame = () => {
     const playerNames = Object.values(playerDetails);
 
     return (
-        <>{hasJoinedRoom ? <div>
-<h1 className="title">Single Player Game {roomId}</h1>
+        <>  {hasJoinedRoom ? <div>
+            <h1 className="title">Single Player Game {roomId}</h1>
             {winner && winner !== 'Draw' && <p className="winner-info">Winner: {playerDetails[winner] || winner}</p>}
             {winner === 'Draw' && <p className="winner-info">Draw</p>} 
            
@@ -244,8 +249,8 @@ const SinglePlayerGame = () => {
                     ))}
                 </ul>
             </div>
-        </div> : <div className="access-denied">Unable to join the room!</div>}
-            
+            <ToastContainer/>
+        </div> : <div> <ToastContainer/> </div>}
         </>
     );
 }

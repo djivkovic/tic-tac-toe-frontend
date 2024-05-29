@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getTokenData } from "../utils/getTokenData ";
+import { getTokenData } from "../utils/getTokenData ";  
+import { showErrorToast } from '../utils/toastNotifications';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import '../css/home.css';
+
 const Home = () => {
     const host = process.env.REACT_APP_HOST;
     const [username, setUsername] = useState('');
@@ -54,10 +58,10 @@ const Home = () => {
             navigate(`/singlePlayer-game/${gameId}`);
         }
         catch(err){
-            alert(err);
-            navigate(`/home`);
+            showErrorToast('Failed to create game!');
         }
     };
+    
     const handleMultiPlayerClick = async () => {
         const gameType = "multiPlayer"; 
     
@@ -74,8 +78,7 @@ const Home = () => {
             navigate(`/game/${gameId}`);
         }
         catch(err){
-            alert(err);
-            navigate(`/home`);
+            showErrorToast('Failed to create game!');
         }
     };
 
@@ -117,6 +120,7 @@ const Home = () => {
                 </div>
             )}
         </div>
+        <ToastContainer/>
         </>
     );
 }

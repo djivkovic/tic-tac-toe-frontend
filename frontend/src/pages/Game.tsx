@@ -2,7 +2,11 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import socketService from '../services/Socket';
 import { getTokenData } from "../utils/getTokenData ";
+import { showErrorToast } from '../utils/toastNotifications';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import '../css/game.css';
+
 const Game = () => {
     const host = process.env.REACT_APP_HOST;
     const [players, setPlayers] = useState<string[]>([]);
@@ -75,7 +79,7 @@ const Game = () => {
 
                     socketService.joinRoom(roomNumber, userId, username);
                 } catch (error: any) {
-                    alert(`Failed to join room ${roomNumber}`);
+                    showErrorToast(`Failed to join room ${roomNumber}`);
                 }
             }
         };
@@ -101,7 +105,7 @@ const Game = () => {
     useEffect(() => {
         const joinRoomResponseListener = (response: any) => {
             if (!response.success) {
-                alert(response.message);
+                showErrorToast(response.message);
             } else {
                 setHasJoinedRoom(true);
             }
@@ -168,7 +172,7 @@ const Game = () => {
                     const movesData = await response.json();
                     setMoves(movesData);
                 } catch (error :any) {
-                    alert(`${error.message}`);
+                    showErrorToast(error.message);
                 }
             }
         };
@@ -204,13 +208,13 @@ const Game = () => {
 
     const handleCellClick = (row: number, col: number) => {
         if (!hasJoinedRoom) {
-            alert("You have not joined the room yet.");
+            showErrorToast("You have not joined the room yet!");
             return;
         }
 
         const isBoardFull = board.every(row => row.every(cell => cell !== null));
         if (isBoardFull) {
-            alert("The board is full. No more moves can be made.");
+            showErrorToast("The board is full. No more moves can be made!");
             return;
         }
 
@@ -239,7 +243,7 @@ const Game = () => {
             }
 
         } catch (error: any) {
-            alert(`${error.message}`);
+            showErrorToast(error.message);
         }
     };
     
@@ -260,7 +264,7 @@ const Game = () => {
                 setUserSymbol(symbol);
             }
         } catch (error :any) {
-            alert(`${error.message}`);
+            showErrorToast(error.message);
         }
     };
 
@@ -295,9 +299,10 @@ const Game = () => {
                     )}
 
                     {userSymbol && <p className="player-symbol">Your symbol:  <span>{userSymbol}</span></p>}
+                    <ToastContainer/>
                 </>
             ) : (
-                <p className="loading-room">Joining room...</p>
+                <ToastContainer/>
             )}
             <ul id="players">
                 {players.map((player, index) => (
