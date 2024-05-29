@@ -1,38 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getTokenData } from "../utils/getTokenData ";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { joinGame } from "../utils/game"; 
+
 const JoinGame = () => {
-  const [id, setId] = useState<number | undefined>(undefined);
-  const [username, setUsername] = useState("");
-  const navigate = useNavigate();
   const host = process.env.REACT_APP_HOST;
-
-  const findGameById = async () => {
-        const response = await fetch(`${host}/api/game/find-game/${id}`, {
-            method: "GET",
-            headers: { 'Content-Type': 'application/json' }
-        });
-
-        const data = await response.json();
-        return data.found;
-  };
-
-  useEffect(() => {
-    const decodedToken = getTokenData();
-    const username = decodedToken.username;
-    if (decodedToken) {
-      setUsername(username);
-    }
-  }, []);
   
-  const joinGame = async () => {
-    const foundGame = await findGameById();
+  const [id, setId] = useState<number | undefined>(undefined);
 
-    if(foundGame && username){
-      navigate(`/game/${id}`);
-    }else{
-      alert("Failed to join game!");
-    }
+  const navigate = useNavigate();
+
+  const handleJoinGame = async () => {
+    await joinGame(id, host, navigate); 
   };
 
   return (
@@ -44,7 +24,8 @@ const JoinGame = () => {
         onChange={(e) => setId(parseInt(e.target.value))} 
         placeholder="Enter game id..." 
       />
-      <button className="join-game" onClick={joinGame}>Join Game</button>
+      <button className="join-game" onClick={handleJoinGame}>Join Game</button> 
+      <ToastContainer />
     </div>
   );
 };

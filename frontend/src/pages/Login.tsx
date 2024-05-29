@@ -1,41 +1,27 @@
-import { useState, SyntheticEvent, useEffect } from 'react';
+import { useState, useEffect, SyntheticEvent } from 'react';
 import { useNavigate } from "react-router-dom";
+import { loginUser, checkLoggedIn } from "../utils/auth";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import '../css/auth.css';
 
 const Login = () => {
-  const [username, setUsername] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-
   const host = process.env.REACT_APP_HOST;
+  
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
 
   const navigate = useNavigate();
 
-  const handleLogin = async (e: SyntheticEvent) => {
+  const handleLogin = async (e:SyntheticEvent) => {
     e.preventDefault();
 
-    let response = await fetch(`${host}/api/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: username, password: password })
-    });
-
-    const result = await response.json();
-    console.log(result);
-
-    if (result.auth) {
-      localStorage.setItem('user', JSON.stringify(result));
-      localStorage.setItem('token', JSON.stringify(result.auth));
-      window.location.reload();
-    } else {
-      alert("Please enter valid details");
-    }
+    await loginUser(username, password, host);
   }
 
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem('token');
-    if (isLoggedIn) {
-      navigate('/home');
-    }
+    checkLoggedIn(navigate);
   }, [navigate]);
 
   return (
@@ -75,6 +61,7 @@ const Login = () => {
           </button>
         </form>
       </div>
+      <ToastContainer/>
     </>
   );
 };

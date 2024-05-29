@@ -2,21 +2,34 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getTokenData } from "../utils/getTokenData ";
 import socketService from '../services/Socket';
+import { showErrorToast } from '../utils/toastNotifications';
+import { ToastContainer } from "react-toastify";
+import { fetchWinner, joinSinglePlayerGame, fetchPlayerDetails, makeSinglePlayerMove, fetchMoves } from "../utils/game";
+import "react-toastify/dist/ReactToastify.css";
 import '../css/game.css';
 
 const SinglePlayerGame = () => {
     const host = process.env.REACT_APP_HOST;
+    
     const { roomId } = useParams<{ roomId: string }>();
     const [moves, setMoves] = useState<any[]>([]);
     const [hasJoinedRoom, setHasJoinedRoom] = useState<boolean>(false);
     const [playerDetails, setPlayerDetails] = useState<{ [key: string]: string }>({});
     const [board, setBoard] = useState<(string | null)[][]>(Array(3).fill(Array(3).fill(null)));
     const [winner, setWinner] = useState<string | null>(null);
+
     const navigate = useNavigate();
+
+    const handleJoinGame = () => {
+        joinSinglePlayerGame(roomId, host, navigate);
+    }
+
+    handleJoinGame();
     
     useEffect(() => {
         const joinRoomResponseListener = (response: any) => {
             if (!response.success) {
+                showErrorToast(response.message);
                 console.log(response.message);
             } else {
                 setHasJoinedRoom(true);
@@ -31,52 +44,8 @@ const SinglePlayerGame = () => {
     }, [playerDetails, roomId]);
 
     useEffect(() => {
-        const fetchWinner = async () => {
-            try {
-                const response = await fetch(`${host}/api/game/winner/${roomId}`); 
-                if (!response.ok) {
-                    throw new Error('Failed to fetch winner');
-                }
-                const data = await response.json();
-                setWinner(data.winner); 
-            } catch (error) {
-                console.error('Error fetching winner:', error);
-            }
-        };
-
-        fetchWinner();
+        fetchWinner(roomId, setWinner, host);
     }, [roomId, host, moves]);
-
-    const findGameById = async () => {
-        try {
-            const response = await fetch(`${host}/api/game/find-game/${roomId}`, {
-                method: "GET",
-                headers: { 'Content-Type': 'application/json' }
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to find game');
-            }
-
-            const data = await response.json();
-            return data.found;
-        } catch (error) {
-            console.error('Error finding game by ID:', error);
-            return false;
-        }
-    };
-
-    const checkGame = async () => {
-        const foundGame = await findGameById();
-
-        if (!foundGame) {
-            navigate("/");
-        } else {
-            navigate(`/singlePlayer-game/${roomId}`);
-        }
-    };
-
-    checkGame();
 
     useEffect(() => {
         const joinRoom = async () => {
@@ -89,7 +58,7 @@ const SinglePlayerGame = () => {
 
                     socketService.joinSinglePlayerRoom(roomNumber, userId, username);
                 } catch (error: any) {
-                    alert(`Failed to join room ${roomNumber}`);
+                    showErrorToast(`Failed to join room ${roomId}`);
                 }
             }
         };
@@ -97,32 +66,8 @@ const SinglePlayerGame = () => {
     }, [roomId]);
 
     useEffect(() => {
-        const fetchPlayerDetails = async () => {
-            try {
-                const response = await fetch(`${host}/api/game/players/${roomId}`, {
-                    method: "GET",
-                    headers: { 'Content-Type': 'application/json' }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch player details');
-                }
-
-                const data = await response.json();
-
-                const playerMap = data.reduce((acc: { [key: string]: string }, player: any) => {
-                    acc[player._id] = player.username;
-                    return acc;
-                }, {});
-
-                setPlayerDetails(playerMap);
-            } catch (error: any) {
-                console.error('Error fetching player details:', error);
-            }
-        };
-
-        fetchPlayerDetails();
-    }, [roomId, host]);
+        fetchPlayerDetails(roomId, setPlayerDetails, navigate, host);
+    }, [roomId, host, navigate]);
 
     useEffect(() => {
         const updateBoardWithMoves = (movesToUse: any[]) => {
@@ -140,59 +85,32 @@ const SinglePlayerGame = () => {
         updateBoardWithMoves(moves);
     }, [moves]);
 
-    const handleCellClick = (row: number, col: number) => {
+    const handleCellClick = async (row: number, col: number) => {
         const isBoardFull = board.every(row => row.every(cell => cell !== null));
         if (isBoardFull) {
-            alert("The board is full. No more moves can be made.");
+            showErrorToast("The board is full. No more moves can be made!");
+            console.log("The board is full. No more moves can be made!");
             return;
         }
-
-        makeMove(row, col);
-    };
-
-    const makeMove = async (row: number, col: number) => {
+    
         try {
             const decodedToken = getTokenData();
             const userId = decodedToken.id;
-
+    
             const move = {
                 index: { x: row, y: col },
                 sign: 'X',
                 userId: userId
             };
-
-            const response = await fetch(`${host}/api/game/singlePlayer/make-move/${roomId}`, {
-                method: "POST",
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ move, userId })
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to make move');
-            }
-
+    
+            await makeSinglePlayerMove(roomId, move, host);
         } catch (error: any) {
-            alert(`${error.message}`);
+            showErrorToast(error.message);
         }
     };
 
     useEffect(() => {
-        const fetchMoves = async () => {
-            if (roomId) {
-                try {
-                    const response = await fetch(`${host}/api/game/moves/${roomId}`);
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch moves');
-                    }
-                    const movesData = await response.json();
-                    setMoves(movesData);
-                } catch (error: any) {
-                    alert(`${error.message}`);
-                }
-            }
-        };
-
-        fetchMoves();
+        fetchMoves(roomId, setMoves, host);
     }, [roomId, host]);
 
     useEffect(() => {
@@ -204,8 +122,8 @@ const SinglePlayerGame = () => {
     const playerNames = Object.values(playerDetails);
 
     return (
-        <>{hasJoinedRoom ? <div>
-<h1 className="title">Single Player Game {roomId}</h1>
+        <>  {hasJoinedRoom ? <div>
+            <h1 className="title">Single Player Game {roomId}</h1>
             {winner && winner !== 'Draw' && <p className="winner-info">Winner: {playerDetails[winner] || winner}</p>}
             {winner === 'Draw' && <p className="winner-info">Draw</p>} 
            
@@ -244,8 +162,8 @@ const SinglePlayerGame = () => {
                     ))}
                 </ul>
             </div>
-        </div> : <div className="access-denied">Unable to join the room!</div>}
-            
+            <ToastContainer/>
+        </div> : <div> <ToastContainer/> </div>}
         </>
     );
 }
