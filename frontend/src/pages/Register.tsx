@@ -1,44 +1,27 @@
-import { useState, SyntheticEvent, useEffect } from 'react';
+import { useState, useEffect, SyntheticEvent } from 'react';
 import { useNavigate } from "react-router-dom";
-import { showErrorToast } from '../utils/toastNotifications';
+import { registerUser, checkLoggedIn } from '../utils/auth';
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import '../css/auth.css';
 
 const Register = () => {
-  const [username, setUsername] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
- 
   const host = process.env.REACT_APP_HOST;
+  
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+ 
 
   const navigate = useNavigate();
 
   const handleRegister = async (e: SyntheticEvent) => {
     e.preventDefault();
 
-    let response = await fetch(`${host}/api/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: username, password: password })
-    });
-
-    const result = await response.json();
-    console.log(result);
-
-    if (result.auth) {
-      localStorage.setItem('user', JSON.stringify(result));
-      localStorage.setItem('token', JSON.stringify(result.auth));
-      window.location.reload();
-    } else {
-      showErrorToast("Please enter valid details!");
-    }
+    await registerUser(username, password, host);
   }
 
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem('token');
-    if (isLoggedIn) {
-      navigate('/home');
-    }
+    checkLoggedIn(navigate);
   }, [navigate]);
 
   return (

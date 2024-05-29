@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getTokenData } from "../utils/getTokenData ";
+import { fetchGameDetails, fetchPlayerDetails } from "../utils/game";
 
 const FindGame = () => {
     const host = process.env.REACT_APP_HOST;
+    
     const { gameId } = useParams<{ gameId: string }>();
     const [players, setPlayers] = useState<string[]>([]);
     const [playerDetails, setPlayerDetails] = useState<{ [key: string]: string }>({});
@@ -11,78 +13,26 @@ const FindGame = () => {
     const [moves, setMoves] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [winner, setWinner] = useState<string | null>(null);
-    const [error, setError] = useState<string | null>(null);
-    const navigate = useNavigate();
     const decodedToken = getTokenData();
     const userId = decodedToken.id;
 
+    const navigate = useNavigate();
+
     useEffect(() => {
-        const fetchGameDetails = async () => {
+        const fetchData = async () => {
             try {
-                const response = await fetch(`${host}/api/game/find-game/${gameId}/${userId}`, {
-                    method: "GET",
-                    headers: { 'Content-Type': 'application/json' }
-                });
-
-                if (!response.ok) {
-                    navigate('/');
-                }
-
-                const data = await response.json();
-
-                if (data.found && data.game) {
-                    setPlayers(data.game.players || []);
-                    setMoves(data.game.moves || []);
-                    const initialBoard = Array(3).fill(null).map(() => Array(3).fill(null));
-                    data.game.moves.forEach((move: any) => {
-                        initialBoard[move.index.x][move.index.y] = move.sign;
-                    });
-                    setBoard(initialBoard);
-                    setWinner(playerDetails[data.game.winner] || data.game.winner);
-                } else {
-                    setError('Game not found!');
-                }
-            } catch (error: any) {
-                setError(error.message);
-            } finally {
-                setLoading(false);
+                await fetchPlayerDetails(gameId, setPlayerDetails, navigate, host);
+                await fetchGameDetails(gameId, userId, setPlayers, setMoves, setBoard, setWinner, setLoading, navigate, host);
+            } catch (error :any) {
+                navigate('/');
             }
         };
 
-        const fetchPlayerDetails = async () => {
-            try {
-                const response = await fetch(`${host}/api/game/players/${gameId}`, {
-                    method: "GET",
-                    headers: { 'Content-Type': 'application/json' }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch player details');
-                }
-
-                const data = await response.json();
-
-                const playerMap = data.reduce((acc: { [key: string]: string }, player: any) => {
-                    acc[player._id] = player.username;
-                    return acc;
-                }, {});
-
-                setPlayerDetails(playerMap);
-            } catch (error: any) {
-                setError(error.message);
-            }
-        };
-
-        fetchPlayerDetails();
-        fetchGameDetails();
-    }, [gameId, host, navigate, userId, playerDetails]);
-
+        fetchData();
+    }, [gameId, userId, host, navigate]);
+    
     if (loading) {
         return <p>Loading game details...</p>;
-    }
-
-    if (error) {
-        return <p className="error-msg">{error}</p>;
     }
 
     return (

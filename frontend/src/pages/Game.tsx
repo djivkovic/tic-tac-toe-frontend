@@ -4,11 +4,13 @@ import socketService from '../services/Socket';
 import { getTokenData } from "../utils/getTokenData ";
 import { showErrorToast } from '../utils/toastNotifications';
 import { ToastContainer } from "react-toastify";
+import { fetchWinner, joinGame, makeMove, fetchMoves, fetchUserSymbol, assignPlayer } from "../utils/game";
 import "react-toastify/dist/ReactToastify.css";
 import '../css/game.css';
 
 const Game = () => {
     const host = process.env.REACT_APP_HOST;
+    
     const [players, setPlayers] = useState<string[]>([]);
     const [hasJoinedRoom, setHasJoinedRoom] = useState<boolean>(false);
     const [board, setBoard] = useState<(string | null)[][]>(Array(3).fill(Array(3).fill(null)));
@@ -18,55 +20,18 @@ const Game = () => {
     const [playerDetails, setPlayerDetails] = useState<{ [key: string]: string }>({});
     const [flag, setFlag] = useState(false);
     const [winner, setWinner] = useState<string | null>(null);
+
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchWinner = async () => {
-            try {
-                const response = await fetch(`${host}/api/game/winner/${roomId}`); 
-                if (!response.ok) {
-                    throw new Error('Failed to fetch winner');
-                }
-                const data = await response.json();
-                setWinner(data.winner); 
-            } catch (error) {
-                console.error('Error fetching winner:', error);
-            }
-        };
-
-        fetchWinner();
+        fetchWinner(roomId, setWinner, host);
     }, [roomId, host, moves]);
 
-    const findGameById = async () => {
-        try {
-            const response = await fetch(`${host}/api/game/find-game/${roomId}`, {
-                method: "GET",
-                headers: { 'Content-Type': 'application/json' }
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to find game');
-            }
-
-            const data = await response.json();
-            return data.found;
-        } catch (error) {
-            console.error('Error finding game by ID:', error);
-            return false;
-        }
+    const handleJoinGame = async () => {
+        await joinGame(roomId, host, navigate); 
     };
-
-    const checkGame = async () => {
-        const foundGame = await findGameById();
-
-        if (!foundGame) {
-            navigate("/");
-        } else {
-            navigate(`/game/${roomId}`);
-        }
-    };
-
-    checkGame();
+    
+    handleJoinGame();
 
     useEffect(() => {
         const joinRoom = async () => {
@@ -162,48 +127,19 @@ const Game = () => {
     }, [roomId, host, players]);
 
     useEffect(() => {
-        const fetchMoves = async () => {
-            if (roomId) {
-                try {
-                    const response = await fetch(`${host}/api/game/moves/${roomId}`);
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch moves');
-                    }
-                    const movesData = await response.json();
-                    setMoves(movesData);
-                } catch (error :any) {
-                    showErrorToast(error.message);
-                }
-            }
-        };
-
-        fetchMoves();
+        fetchMoves(roomId, setMoves, host);
     }, [roomId, host]);
 
     useEffect(() => {
-        const fetchUserSymbol = async () => {
+        const fetchAndSetUserSymbol = async () => {
             if (roomId) {
-                try {
-                    const decodedToken = getTokenData();
-                    const userId = decodedToken.id;
-                    const response = await fetch(`${host}/api/game/player-symbol/${roomId}/${userId}`, {
-                        method: "GET",
-                        headers: { 'Content-Type': 'application/json' },
-                    });
-
-                    if (response.ok) {
-                        const data = await response.json();
-                        setUserSymbol(data.symbol);
-                    } else {
-                        throw new Error('Failed to fetch user symbol');
-                    }
-                } catch (error:any) {
-                    console.error('Error fetching user symbol:', error);
-                }
+                const decodedToken = getTokenData();
+                const userId = decodedToken.id;
+                await fetchUserSymbol(roomId, host, userId, setUserSymbol);
             }
         };
 
-        fetchUserSymbol();
+        fetchAndSetUserSymbol();
     }, [roomId, host, flag, playerDetails]);
 
     const handleCellClick = (row: number, col: number) => {
@@ -218,54 +154,23 @@ const Game = () => {
             return;
         }
 
-        makeMove(row, col);
-    };
+        const decodedToken = getTokenData();
+        const userId = decodedToken.id;
 
-    const makeMove = async (row: number, col: number) => {
-        try {
-            const decodedToken = getTokenData();
-            const userId = decodedToken.id;
+        const move = {
+            index: { x: row, y: col },
+            sign: userSymbol,
+            userId: userId
+        };
 
-            const move = {
-                index: { x: row, y: col },
-                sign: userSymbol,
-                userId: userId
-            };
-
-            const response = await fetch(`${host}/api/game/make-move/${roomId}`, {
-                method: "POST",
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ move, userId })
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to make move');
-            }
-
-        } catch (error: any) {
-            showErrorToast(error.message);
-        }
+        makeMove(roomId, move, userId, host);
     };
     
-    const assignPlayer = async (symbol: string) => {
-        try {
-            const decodedToken = getTokenData();
-            const userId = decodedToken.id;
+    const handleAssignPlayer = (symbol :string) => {
+        const decodedToken = getTokenData();
+        const userId = decodedToken.id;
 
-            const response = await fetch(`${host}/api/game/assign-player/${roomId}`, {
-                method: "POST",
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId, sign: symbol })
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to assign player');
-            } else {
-                setUserSymbol(symbol);
-            }
-        } catch (error :any) {
-            showErrorToast(error.message);
-        }
+        assignPlayer(roomId, symbol, host, setUserSymbol, userId);
     };
 
     return (
@@ -293,8 +198,8 @@ const Game = () => {
 
                     {!userSymbol && hasJoinedRoom && !flag && (
                         <div className="assign-buttons">
-                            <button className="assignX" onClick={() => assignPlayer("X")}>Play as X</button>
-                            <button className="assignO" onClick={() => assignPlayer("O")}>Play as O</button>
+                            <button className="assignX" onClick={() => handleAssignPlayer("X")}>Play as X</button>
+                            <button className="assignO" onClick={() => handleAssignPlayer("O")}>Play as O</button>
                         </div>
                     )}
 

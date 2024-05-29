@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getTokenData } from "../utils/getTokenData ";  
-import { showErrorToast } from '../utils/toastNotifications';
 import { ToastContainer } from "react-toastify";
+import { createGame } from "../utils/game";
 import "react-toastify/dist/ReactToastify.css";
 import '../css/home.css';
 
 const Home = () => {
     const host = process.env.REACT_APP_HOST;
+    
     const [username, setUsername] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [hideCreateNewGame, setHideCreateNewGame] = useState(false);
@@ -33,6 +34,7 @@ const Home = () => {
         setShowModal(false);
         setHideCreateNewGame(false);
     };
+
     useEffect(() => {
         const decodedToken = getTokenData();
         const username = decodedToken.username;
@@ -43,42 +45,16 @@ const Home = () => {
     }, []);
 
     const handleSinglePlayerClick = async () => {
-        const gameType = "singlePlayer";
-
-        try{
-            const response = await fetch(`${host}/api/game/create-game`, {
-                method: "POST",
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ gameType })
-            });
-        
-            const data = await response.json();
-            const gameId = data.gameId;
-    
+        const gameId = await createGame("singlePlayer", host);
+        if (gameId) {
             navigate(`/singlePlayer-game/${gameId}`);
-        }
-        catch(err){
-            showErrorToast('Failed to create game!');
         }
     };
     
     const handleMultiPlayerClick = async () => {
-        const gameType = "multiPlayer"; 
-    
-        try{
-            const response = await fetch(`${host}/api/game/create-game`, {
-                method: "POST",
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ gameType })
-            });
-        
-            const data = await response.json();
-            const gameId = data.gameId;
-    
+        const gameId = await createGame("multiPlayer", host);
+        if (gameId) {
             navigate(`/game/${gameId}`);
-        }
-        catch(err){
-            showErrorToast('Failed to create game!');
         }
     };
 
