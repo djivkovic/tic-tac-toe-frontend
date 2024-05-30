@@ -6,4 +6,12 @@ It allows users to create accounts and play Tic Tac Toe online or against the co
 
 React and TypeScript are used for development.
 
-To run the project, clone the repository, install dependencies using the npm install command, and then start the project with npm start command in the frontend directory.
+To run the project: 
+    1. Clone the repository
+
+    2. Install dependencies using the 'npm install' command
+
+    3. Navigate to the 'frontend' directory
+
+    4. Start the project with the 'npm start' command
+    
