@@ -24,7 +24,9 @@ const SinglePlayerGame = () => {
         joinSinglePlayerGame(roomId, host, navigate);
     }
 
-    handleJoinGame();
+    useEffect(() => {
+        handleJoinGame();
+    }, []);
     
     useEffect(() => {
         const joinRoomResponseListener = (response: any) => {

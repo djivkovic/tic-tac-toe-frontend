@@ -31,7 +31,9 @@ const Game = () => {
         await joinGame(roomId, host, navigate); 
     };
     
-    handleJoinGame();
+    useEffect(() => {
+        handleJoinGame();
+    },[]);
 
     useEffect(() => {
         const joinRoom = async () => {
